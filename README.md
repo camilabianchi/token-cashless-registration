@@ -39,6 +39,6 @@ Payload:
 ```
 
 Response: 
-```json
-true/false
+```
+true / false
 ```
