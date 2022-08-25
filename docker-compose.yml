@@ -1,0 +1,19 @@
+﻿version: '3'
+services:
+  db:
+    image: postgres:11
+    container_name: token-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123
+    ports:
+      - 5432:5432
+    volumes:
+      - ./Postgres/:/var/lib/postgresql/data
+    networks:
+      - token-network
+
+networks:
+  token-network:
+    driver: bridge

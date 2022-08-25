@@ -1,16 +1,20 @@
 ﻿using CashlessRegistration.Domain.Data;
 using CashlessRegistration.Domain.Entities;
 using CashlessRegistration.Infrastructure.EntityConfig;
+using CashlessRegistration.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace CashlessRegistration.Infrastructure.Data
 {
     public class CashlessRegistrationDBContext : DbContext, IUnitOfWork
     {
-        public CashlessRegistrationDBContext(DbContextOptions<CashlessRegistrationDBContext> options) 
-            : base(options)
+        private readonly string _connectionString;
+
+        public CashlessRegistrationDBContext(PostgresOptions options)
         {
+            _connectionString = options.ConnectionString;
         }
 
         public DbSet<CustomerCard> CustomerCards { get; set; }
@@ -23,6 +27,11 @@ namespace CashlessRegistration.Infrastructure.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.UseNpgsql(_connectionString)
+                .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.DetachedLazyLoadingWarning))
+                .UseSnakeCaseNamingConvention()
+                .UseLazyLoadingProxies();
+
             var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder
